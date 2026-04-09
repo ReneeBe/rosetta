@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+# Rosetta
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Paste code in one language, pick a target from 50+ languages, and get a line-by-line translation with explanations of every difference. Not just a translator, but a teacher.
 
-Currently, two official plugins are available:
+**[Live demo](https://reneebe.github.io/rosetta/)** · Part of [50 Projects in 50 Days](https://reneebe.github.io/50projects)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How it works
 
-## React Compiler
+1. Paste your code and select the source and target languages
+2. Claude translates the code and returns structured JSON
+3. Results show a three-column breakdown: original, translated, and a plain-English explanation of what changed and why
+4. Copy the full translated code with one click
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Auth
 
-## Expanding the ESLint configuration
+Two ways to use it:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **MagicLink**: visit with a [MagicLink token](https://magiclink.reneebe.workers.dev) for 5 free translations, no API key needed
+- **API key**: enter your own Claude API key (stored in sessionStorage, cleared on tab close)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- React + TypeScript + Vite
+- [MagicLink](https://github.com/ReneeBe/magiclink) SDK for token-gated API access
+- Claude Sonnet 4.6 via Anthropic Messages API
+- GitHub Pages
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Development
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## License
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+MIT
