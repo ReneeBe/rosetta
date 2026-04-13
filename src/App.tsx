@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { CodeInput } from "./components/CodeInput";
 import { TranslationView } from "./components/TranslationView";
-import { AuthSection } from "./components/AuthSection";
 import { translateCode, type TranslationResult } from "./utils/api";
 import "./App.css";
 
@@ -17,26 +16,13 @@ export default function App() {
   const [code, setCode] = useState("");
   const [fromLang, setFromLang] = useState("JavaScript");
   const [toLang, setToLang] = useState("Python");
-  const [apiKey, setApiKey] = useState(
-    () => sessionStorage.getItem("rosetta-api-key") ?? ""
-  );
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  const [remaining, setRemaining] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-
-  const hasMagicLink = !!window.magiclink?.hasToken;
-
-  function saveApiKey(val: string) {
-    setApiKey(val);
-    if (val) sessionStorage.setItem("rosetta-api-key", val);
-    else sessionStorage.removeItem("rosetta-api-key");
-  }
 
   async function handleTranslate() {
     if (!code.trim() || fromLang === toLang) return;
-    if (!hasMagicLink && !apiKey.trim()) return;
 
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -50,14 +36,11 @@ export default function App() {
         code,
         fromLang,
         toLang,
-        apiKey,
-        hasMagicLink,
         signal: controller.signal,
       });
       if (controller.signal.aborted) return;
       setResult(res);
       setStatus("done");
-      if (res.remaining !== null) setRemaining(res.remaining);
     } catch (e: unknown) {
       if (e instanceof DOMException && e.name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -65,10 +48,7 @@ export default function App() {
     }
   }
 
-  const canSubmit =
-    code.trim().length > 0 &&
-    fromLang !== toLang &&
-    (hasMagicLink || apiKey.trim().length > 0);
+  const canSubmit = code.trim().length > 0 && fromLang !== toLang;
 
   return (
     <div className="container">
@@ -87,13 +67,6 @@ export default function App() {
             line. Not just a translator, but a teacher.
           </p>
         </header>
-
-        <AuthSection
-          hasMagicLink={hasMagicLink}
-          apiKey={apiKey}
-          onApiKeyChange={saveApiKey}
-          remaining={remaining}
-        />
 
         <CodeInput
           code={code}

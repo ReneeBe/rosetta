@@ -21,8 +21,6 @@ export interface TranslateOptions {
   code: string;
   fromLang: string;
   toLang: string;
-  apiKey: string;
-  hasMagicLink: boolean;
   signal?: AbortSignal;
 }
 
@@ -48,8 +46,6 @@ export async function translateCode({
   code,
   fromLang,
   toLang,
-  apiKey,
-  hasMagicLink,
   signal,
 }: TranslateOptions): Promise<TranslationResult> {
   const request = {
@@ -67,17 +63,20 @@ export async function translateCode({
   let content: string;
   let remaining: number | null = null;
 
-  if (hasMagicLink) {
+  if (window.magiclink) {
+    // MagicLink 2.0: always route through proxy, send token if available
     const token = localStorage.getItem("magiclink_token");
+    const body: Record<string, unknown> = {
+      projectId: "rosetta",
+      provider: "claude",
+      request,
+    };
+    if (token) body.token = token;
+
     const res = await fetch(`${MAGICLINK_URL}/api/proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token,
-        projectId: "rosetta",
-        provider: "claude",
-        request,
-      }),
+      body: JSON.stringify(body),
       signal,
     });
     const json = (await res.json()) as {
@@ -89,11 +88,11 @@ export async function translateCode({
     content = json.result!.content[0].text;
     if (json.usage) remaining = json.usage.remaining;
   } else {
+    // Fallback: direct API call (requires CORS proxy in dev)
     const res = await fetch(ANTHROPIC_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true",
       },
