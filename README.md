@@ -13,10 +13,7 @@ Paste code in one language, pick a target from 50+ languages, and get a line-by-
 
 ## Auth
 
-Two ways to use it:
-
-- **MagicLink**: visit with a [MagicLink token](https://magiclink.reneebe.workers.dev) for 5 free translations, no API key needed
-- **API key**: enter your own Claude API key (stored in sessionStorage, cleared on tab close)
+No API key needed. The app includes a daily visitor pool for free translations. [MagicLink](https://magiclink.reneebe.workers.dev/resume) tokens provide additional access (20 uses across all projects).
 
 ## Stack
 
